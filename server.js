@@ -1000,7 +1000,64 @@ app.post("/exportar", async (req, res) => {
       );
       return result.rows;
     });
+// ========================
+// EXPORTAR CSV (Descarga directa)
+// ========================
+app.post("/exportar", async (req, res) => {
+  try {
+    const pasajes = await withConn(async (conn) => {
+      const result = await conn.query(
+        `SELECT r.nombre ruta,
+                t.nombre tipo,
+                p.valor,
+                TO_CHAR(p.fecha_viaje, 'DD/MM/YYYY') fecha,
+                TO_CHAR(p.fecha_viaje, 'HH24:MI:SS') hora
+         FROM pasajes p
+         JOIN rutas r ON p.id_ruta = r.id_ruta
+         JOIN tipos_pasaje t ON p.id_tipo = t.id_tipo
+         ORDER BY p.fecha_viaje DESC`
+      );
+      return result.rows;
+    });
 
+    // Generar CSV
+    const csv = [
+      "Ruta,Tipo Pasaje,Valor,Fecha,Hora",
+      ...pasajes.map(p =>
+        `"${p.ruta}","${p.tipo}",${p.valor},"${p.fecha}","${p.hora}"`
+      )
+    ].join("\n");
+
+    // Nombre del archivo con fecha actual
+    const now = new Date();
+    const timestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+    const filename = `pasajes_${timestamp}.csv`;
+
+    // Configurar headers para descarga
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    
+    // Agregar BOM para que Excel reconozca UTF-8
+    res.write('\ufeff');
+    
+    // Enviar CSV
+    res.send(csv);
+
+  } catch (err) {
+    res.status(500).send(
+      layout({
+        title: "Error",
+        body: `
+          <div class="alert alert-danger">
+            <h4>❌ Error al exportar CSV</h4>
+            <pre class="mb-0">${esc(err && err.message ? err.message : String(err))}</pre>
+          </div>
+          <a class="btn btn-outline-danger mt-3" href="/pasajes">← Volver al listado</a>
+        `,
+      })
+    );
+  }
+});
     // Generar CSV
     const csv = [
       "Ruta,Tipo Pasaje,Valor,Fecha,Hora",
@@ -1057,7 +1114,124 @@ app.post("/exportar", async (req, res) => {
     );
   }
 });
+/*
+// ========================
+// EXPORTAR CSV (Descarga directa)
+// ========================
+app.post("/exportar", async (req, res) => {
+  try {
+    const pasajes = await withConn(async (conn) => {
+      const result = await conn.query(
+        `SELECT r.nombre ruta,
+                t.nombre tipo,
+                p.valor,
+                TO_CHAR(p.fecha_viaje, 'DD/MM/YYYY') fecha,
+                TO_CHAR(p.fecha_viaje, 'HH24:MI:SS') hora
+         FROM pasajes p
+         JOIN rutas r ON p.id_ruta = r.id_ruta
+         JOIN tipos_pasaje t ON p.id_tipo = t.id_tipo
+         ORDER BY p.fecha_viaje DESC`
+      );
+      return result.rows;
+    });
 
+    // Generar CSV
+    const csv = [
+      "Ruta,Tipo Pasaje,Valor,Fecha,Hora",
+      ...pasajes.map(p =>
+        `"${p.ruta}","${p.tipo}",${p.valor},"${p.fecha}","${p.hora}"`
+      )
+    ].join("\n");
+
+    // Nombre del archivo con fecha actual
+    const now = new Date();
+    const timestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+    const filename = `pasajes_${timestamp}.csv`;
+
+    // Configurar headers para descarga
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    
+    // Agregar BOM para que Excel reconozca UTF-8
+    res.write('\ufeff');
+    
+    // Enviar CSV
+    res.send(csv);
+
+  } catch (err) {
+    res.status(500).send(
+      layout({
+        title: "Error",
+        body: `
+          <div class="alert alert-danger">
+            <h4>❌ Error al exportar CSV</h4>
+            <pre class="mb-0">${esc(err && err.message ? err.message : String(err))}</pre>
+          </div>
+          <a class="btn btn-outline-danger mt-3" href="/pasajes">← Volver al listado</a>
+        `,
+      })
+    );
+  }
+});
+*/
+// ========================
+// EXPORTAR CSV (Descarga directa)
+// ========================
+app.post("/exportar", async (req, res) => {
+  try {
+    const pasajes = await withConn(async (conn) => {
+      const result = await conn.query(
+        `SELECT r.nombre ruta,
+                t.nombre tipo,
+                p.valor,
+                TO_CHAR(p.fecha_viaje, 'DD/MM/YYYY') fecha,
+                TO_CHAR(p.fecha_viaje, 'HH24:MI:SS') hora
+         FROM pasajes p
+         JOIN rutas r ON p.id_ruta = r.id_ruta
+         JOIN tipos_pasaje t ON p.id_tipo = t.id_tipo
+         ORDER BY p.fecha_viaje DESC`
+      );
+      return result.rows;
+    });
+
+    // Generar CSV
+    const csv = [
+      "Ruta,Tipo Pasaje,Valor,Fecha,Hora",
+      ...pasajes.map(p =>
+        `"${p.ruta}","${p.tipo}",${p.valor},"${p.fecha}","${p.hora}"`
+      )
+    ].join("\n");
+
+    // Nombre del archivo con fecha actual
+    const now = new Date();
+    const timestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+    const filename = `pasajes_${timestamp}.csv`;
+
+    // Configurar headers para descarga
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    
+    // Agregar BOM para que Excel reconozca UTF-8
+    res.write('\ufeff');
+    
+    // Enviar CSV
+    res.send(csv);
+
+  } catch (err) {
+    res.status(500).send(
+      layout({
+        title: "Error",
+        body: `
+          <div class="alert alert-danger">
+            <h4>❌ Error al exportar CSV</h4>
+            <pre class="mb-0">${esc(err && err.message ? err.message : String(err))}</pre>
+          </div>
+          <a class="btn btn-outline-danger mt-3" href="/pasajes">← Volver al listado</a>
+        `,
+      })
+    );
+  }
+});
 // Iniciar servidor
 app.listen(process.env.PORT || 3000, async () => {
   console.log("════════════════════════════════════════════════════");
