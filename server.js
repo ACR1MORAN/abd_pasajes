@@ -6,18 +6,18 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 
 // Usar DATABASE_URL si existe (para Render.com), sino usar variables individuales
-const dbConfig = process.env.DATABASE_URL 
+const dbConfig = process.env.DATABASE_URL
   ? {
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false } // Necesario para Render.com
-    }
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false } // Necesario para Render.com
+  }
   : {
-      user: process.env.DB_USER || "postgres",
-      password: process.env.DB_PASSWORD || "12345",
-      host: process.env.DB_HOST || "localhost",
-      port: parseInt(process.env.DB_PORT) || 5432,
-      database: process.env.DB_NAME || "pasajes_db"
-    };
+    user: process.env.DB_USER || "postgres",
+    password: process.env.DB_PASSWORD || "12345",
+    host: process.env.DB_HOST || "localhost",
+    port: parseInt(process.env.DB_PORT) || 5432,
+    database: process.env.DB_NAME || "pasajes_db"
+  };
 
 const pool = new Pool(dbConfig);
 
@@ -303,13 +303,12 @@ app.get("/pasajes", async (req, res) => {
           <select class="form-select" name="ruta">
             <option value="">Todas las rutas</option>
             ${rutas
-              .map(
-                (r) =>
-                  `<option value="${esc(r.nombre)}" ${
-                    rutaFiltro === r.nombre ? "selected" : ""
-                  }>${esc(r.nombre)}</option>`
-              )
-              .join("")}
+        .map(
+          (r) =>
+            `<option value="${esc(r.nombre)}" ${rutaFiltro === r.nombre ? "selected" : ""
+            }>${esc(r.nombre)}</option>`
+        )
+        .join("")}
           </select>
         </div>
         <div class="col-12 col-md-4 d-flex gap-2">
@@ -340,11 +339,10 @@ app.get("/pasajes", async (req, res) => {
             </tr>
           </thead>
           <tbody>
-            ${
-              pasajes.length
-                ? pasajes
-                    .map(
-                      (p) => `
+            ${pasajes.length
+        ? pasajes
+          .map(
+            (p) => `
               <tr>
                 <td><span class="badge-soft">#${esc(p.id_pasaje)}</span></td>
                 <td><strong>${esc(p.ruta)}</strong></td>
@@ -355,33 +353,33 @@ app.get("/pasajes", async (req, res) => {
                 <td>${esc(p.hora)}</td>
                 <td class="text-end">
                   <a class="btn btn-sm btn-outline-primary" href="/pasajes/${esc(
-                    p.id_pasaje
-                  )}/edit">✏️ Editar</a>
+              p.id_pasaje
+            )}/edit">✏️ Editar</a>
                   <form class="d-inline" method="POST" action="/pasajes/${esc(
-                    p.id_pasaje
-                  )}/delete"
+              p.id_pasaje
+            )}/delete"
                         onsubmit="return confirm('¿Eliminar el pasaje #${esc(
-                          p.id_pasaje
-                        )}?');">
+              p.id_pasaje
+            )}?');">
                     <button class="btn btn-sm btn-outline-danger">🗑️ Eliminar</button>
                   </form>
                 </td>
               </tr>
               `
-                    )
-                    .join("")
-                : `<tr><td colspan="8" class="text-center py-5 empty-row">
+          )
+          .join("")
+        : `<tr><td colspan="8" class="text-center py-5 empty-row">
                     <div class="py-3">
                       <h5>📭 No hay pasajes registrados</h5>
                       <p class="text-muted mb-3">
-                        ${rutaFiltro 
-                          ? `No se encontraron pasajes para la ruta "${esc(rutaFiltro)}"` 
-                          : 'Comienza agregando tu primer pasaje'}
+                        ${rutaFiltro
+          ? `No se encontraron pasajes para la ruta "${esc(rutaFiltro)}"`
+          : 'Comienza agregando tu primer pasaje'}
                       </p>
                       <a class="btn btn-primary" href="/pasajes/new">+ Crear primer pasaje</a>
                     </div>
                   </td></tr>`
-            }
+      }
           </tbody>
         </table>
       </div>
@@ -542,9 +540,8 @@ app.get("/pasajes/historial", async (req, res) => {
             </tr>
           </thead>
           <tbody>
-            ${
-              historial.detalles.length
-                ? historial.detalles.map(p => `
+            ${historial.detalles.length
+        ? historial.detalles.map(p => `
               <tr>
                 <td><span class="badge-soft">#${esc(p.id_pasaje)}</span></td>
                 <td><strong>${esc(p.ruta)}</strong></td>
@@ -561,14 +558,14 @@ app.get("/pasajes/historial", async (req, res) => {
                 </td>
               </tr>
               `).join('')
-                : `<tr><td colspan="7" class="text-center py-5 empty-row">
+        : `<tr><td colspan="7" class="text-center py-5 empty-row">
                     <div class="py-3">
                       <h5>📭 No hay pasajes registrados</h5>
                       <p class="text-muted mb-3">Comienza agregando tu primer pasaje</p>
                       <a class="btn btn-primary" href="/pasajes/new">+ Crear primer pasaje</a>
                     </div>
                   </td></tr>`
-            }
+      }
           </tbody>
         </table>
       </div>
@@ -679,13 +676,13 @@ app.post("/pasajes", async (req, res) => {
   const hora = (req.body.hora || "").trim();
 
   if (!ruta_nombre || !unidad_placa || !tipo_nombre || !Number.isFinite(valor) || valor <= 0 || !fecha || !hora) {
-    return res.status(400).send(layout({ 
-      title: "Error", 
+    return res.status(400).send(layout({
+      title: "Error",
       body: `<div class="alert alert-danger">
         <h4>❌ Datos inválidos</h4>
         <p>Por favor verifica que todos los campos estén completos y el valor sea mayor a 0.</p>
         <a class="btn btn-outline-danger" href="/pasajes/new">← Volver al formulario</a>
-      </div>` 
+      </div>`
     }));
   }
 
@@ -811,12 +808,11 @@ app.get("/pasajes/:id/edit", async (req, res) => {
           <label class="form-label">Ruta</label>
           <select class="form-select" name="id_ruta" required>
             ${rutas
-              .map(
-                (r) => `<option value="${r.id_ruta}" ${
-                  r.id_ruta === pasaje.id_ruta ? "selected" : ""
-                }>${esc(r.nombre)}</option>`
-              )
-              .join("")}
+        .map(
+          (r) => `<option value="${r.id_ruta}" ${r.id_ruta === pasaje.id_ruta ? "selected" : ""
+            }>${esc(r.nombre)}</option>`
+        )
+        .join("")}
           </select>
         </div>
 
@@ -824,12 +820,11 @@ app.get("/pasajes/:id/edit", async (req, res) => {
           <label class="form-label">Unidad</label>
           <select class="form-select" name="id_unidad" required>
             ${unidades
-              .map(
-                (u) => `<option value="${u.id_unidad}" ${
-                  u.id_unidad === pasaje.id_unidad ? "selected" : ""
-                }>${esc(u.placa)}</option>`
-              )
-              .join("")}
+        .map(
+          (u) => `<option value="${u.id_unidad}" ${u.id_unidad === pasaje.id_unidad ? "selected" : ""
+            }>${esc(u.placa)}</option>`
+        )
+        .join("")}
           </select>
         </div>
 
@@ -837,12 +832,11 @@ app.get("/pasajes/:id/edit", async (req, res) => {
           <label class="form-label">Tipo</label>
           <select class="form-select" name="id_tipo" required>
             ${tipos
-              .map(
-                (t) => `<option value="${t.id_tipo}" ${
-                  t.id_tipo === pasaje.id_tipo ? "selected" : ""
-                }>${esc(t.nombre)}</option>`
-              )
-              .join("")}
+        .map(
+          (t) => `<option value="${t.id_tipo}" ${t.id_tipo === pasaje.id_tipo ? "selected" : ""
+            }>${esc(t.nombre)}</option>`
+        )
+        .join("")}
           </select>
         </div>
 
@@ -914,13 +908,13 @@ app.post("/pasajes/:id", async (req, res) => {
     !fecha ||
     !hora
   ) {
-    return res.status(400).send(layout({ 
-      title: "Error", 
+    return res.status(400).send(layout({
+      title: "Error",
       body: `<div class="alert alert-danger">
         <h4>❌ Datos inválidos</h4>
         <p>Por favor verifica que todos los campos estén completos y el valor sea mayor a 0.</p>
         <a class="btn btn-outline-danger" href="/pasajes/${id}/edit">← Volver al formulario</a>
-      </div>` 
+      </div>`
     }));
   }
 
@@ -985,26 +979,49 @@ app.post("/exportar", async (req, res) => {
   try {
     const pasajes = await withConn(async (conn) => {
       const result = await conn.query(
-        `SELECT r.nombre ruta,
-                t.nombre tipo,
+        `SELECT r.nombre AS ruta,
+                u.placa AS unidad,
+                t.nombre AS tipo,
                 p.valor,
-                TO_CHAR(p.fecha_viaje, 'DD/MM/YYYY') fecha,
-                TO_CHAR(p.fecha_viaje, 'HH24:MI:SS') hora
+                TO_CHAR(p.fecha_viaje, 'DD/MM/YYYY') AS fecha,
+                TO_CHAR(p.fecha_viaje, 'HH24:MI:SS') AS hora
          FROM pasajes p
          JOIN rutas r ON p.id_ruta = r.id_ruta
+         JOIN unidades u ON p.id_unidad = u.id_unidad
          JOIN tipos_pasaje t ON p.id_tipo = t.id_tipo
          ORDER BY p.fecha_viaje DESC`
       );
       return result.rows;
     });
 
-    // Generar CSV
+    // Verificar si hay datos
+    console.log("📊 Total de pasajes a exportar:", pasajes.length);
+
+    if (pasajes.length === 0) {
+      return res.send(
+        layout({
+          title: "Sin datos",
+          body: `
+            <div class="alert alert-warning">
+              <h4>⚠️ No hay datos para exportar</h4>
+              <p>No se encontraron pasajes en la base de datos.</p>
+              <a class="btn btn-primary" href="/pasajes/new">+ Crear pasaje</a>
+              <a class="btn btn-outline-secondary" href="/pasajes">← Volver</a>
+            </div>
+          `,
+        })
+      );
+    }
+
+    // Generar CSV con encabezados correctos
     const csv = [
-      "Ruta,Tipo Pasaje,Valor,Fecha,Hora",
+      "Ruta,Unidad,Tipo Pasaje,Valor,Fecha,Hora",
       ...pasajes.map(p =>
-        `"${p.ruta}","${p.tipo}",${p.valor},"${p.fecha}","${p.hora}"`
+        `"${p.ruta}","${p.unidad}","${p.tipo}",${p.valor},"${p.fecha}","${p.hora}"`
       )
     ].join("\n");
+
+    console.log("✅ CSV generado con", pasajes.length, "registros");
 
     // Nombre del archivo con fecha actual
     const now = new Date();
@@ -1014,14 +1031,15 @@ app.post("/exportar", async (req, res) => {
     // Configurar headers para descarga
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    
-    // Agregar BOM para que Excel reconozca UTF-8
+
+    // Agregar BOM para que Excel reconozca UTF-8 correctamente
     res.write('\ufeff');
-    
+
     // Enviar CSV
     res.send(csv);
 
   } catch (err) {
+    console.error("❌ Error al exportar:", err);
     res.status(500).send(
       layout({
         title: "Error",
@@ -1048,7 +1066,7 @@ app.listen(process.env.PORT || 3000, async () => {
   console.log("📊 Base de datos: PostgreSQL");
   console.log(`🔧 Ambiente: ${process.env.NODE_ENV || "development"}`);
   console.log("");
-  
+
   // Test de conexión a la BD
   try {
     const result = await pool.query("SELECT NOW()");
@@ -1058,7 +1076,7 @@ app.listen(process.env.PORT || 3000, async () => {
     console.error("❌ Error de conexión a PostgreSQL:");
     console.error(err.message);
   }
-  
+
   console.log("");
   console.log("Presiona Ctrl+C para detener");
   console.log("");
