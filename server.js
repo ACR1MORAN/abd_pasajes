@@ -195,7 +195,7 @@ function layout({ title, body, alert }) {
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="/pasajes">🚌 Pasajes Ibarra</a>
+      <a class="navbar-brand fw-bold" href="/pasajes">🚌 Pasajes </a>
       <div class="d-flex gap-2">
         <a class="btn btn-outline-light btn-sm" href="/pasajes">Listado</a>
         <a class="btn btn-outline-light btn-sm" href="/pasajes/historial">📊 Historial</a>
